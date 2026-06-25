@@ -384,7 +384,7 @@ def main():
         raise ValueError(f"Invalid setting '{setting}' or task_name '{task_name}'")
 
     for out in outs:
-        root_data_path = f'/cluster/project7/Llava_2024/Runlong/Datasets/{dataset_name}/'
+        root_data_path = f'/path/to/Datasets/{dataset_name}/'
         data_split_path = os.path.join(root_data_path, setting, out)
         print(f"\n>>> Starting cross-validation fold: {out}")
 
