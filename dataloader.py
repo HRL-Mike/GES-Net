@@ -8,19 +8,22 @@ from torch.nn.utils.rnn import pad_sequence
 
 
 def collate_fn(batch):
+    # Unpack the simplified data flow.
     names, lengths, dv3s, e_labs, g_labs, s_labs = zip(*batch)
-
+    # 1. Pad sequence features along time: [B, T, 768].
+    # If features are [T, 5, 768], take the patch average here or in Dataset.
     dv3_list = []
     for f in dv3s:
         f_tensor = torch.from_numpy(f)
-        if f_tensor.ndim == 3:
+        if f_tensor.ndim == 3:  # Handle [T, 5, 768].
+            # Index 1 matches the requested patch-average feature.
             f_tensor = f_tensor[:, 1, :]
         dv3_list.append(f_tensor)
     dv3_padded = pad_sequence(dv3_list, batch_first=True)
-
+    # 2. Pad labels with -100 for ignored positions.
     e_padded = pad_sequence([torch.from_numpy(l) for l in e_labs], batch_first=True, padding_value=-100)
     g_padded = pad_sequence([torch.from_numpy(l) for l in g_labs], batch_first=True, padding_value=-100)
-
+    # 3. Convert scalar labels.
     s_labs = torch.tensor(s_labs).float()
     lengths = torch.tensor(lengths).int()
 
@@ -45,7 +48,8 @@ class CustomVideoDataset(Dataset):
         with open(video_path, 'rb') as f:
             video_data = pickle.load(f)
 
-        dv3_features = video_data['dino_v3_b224_feature'].astype('float32')
+        # Load only required visual features and GT labels.
+        dv3_features = video_data['dino_v3_b224_feature'].astype('float32')  # [T, 5, 768]
         e_labels = video_data['error_GT'].astype('float32')
         g_labels = video_data['gesture_GT'].astype('float32')
         s_label = video_data['GRS_GT'][0].astype('float32')
