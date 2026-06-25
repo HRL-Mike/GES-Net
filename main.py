@@ -377,7 +377,7 @@ def main():
     elif setting == 'LOUO' and task_name == 'All_SU':
         outs = ['1out', '2out', '3out', '4out', '5out', '6out', '7out', '8out']
         dataset_name = 'JIGSAWS'
-    elif setting in ['4fold', '4fold-2'] and task_name == 'RARP':
+    elif setting == '4fold' and task_name == 'RARP':
         outs = ['F1', 'F2', 'F3', 'F4']
         dataset_name = 'RARP'
     else:
